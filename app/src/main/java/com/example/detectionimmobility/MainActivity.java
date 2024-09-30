@@ -21,6 +21,7 @@ import com.example.detectionimmobility.databinding.ActivityMainBinding;
 
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -39,6 +40,9 @@ public class MainActivity extends AppCompatActivity {
 
         setSupportActionBar(binding.toolbar);
 
+        displayAndroidVersion();
+        displayAndroidBatteryOptimisation();
+
         //handleBattery();
         handleWakeLock();
 
@@ -49,6 +53,21 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
+
+    protected void displayAndroidVersion() {
+        TextView androidVersionTextView = findViewById(R.id.androidVersion);
+        androidVersionTextView.setText(String.valueOf(Build.VERSION.SDK_INT));
+    }
+
+    private void displayAndroidBatteryOptimisation() {
+        TextView batterieOptimisationTextView = findViewById(R.id.batterieOptimisation);
+        if(isBatteryOptimisationDisable()) {
+            batterieOptimisationTextView.setText("Désactivée");
+        } else {
+            batterieOptimisationTextView.setText("Activée");
+        }
+    }
+
 
     public boolean foregroundServiceRunning(){
         ActivityManager activityManager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
@@ -112,14 +131,20 @@ public class MainActivity extends AppCompatActivity {
 
     private void handleBattery() {
         Intent intent = new Intent();
-        String packageName = getPackageName();
-        PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
-        if (pm.isIgnoringBatteryOptimizations(packageName))
-            intent.setAction(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS);
-        else {
+
+        if(!this.isBatteryOptimisationDisable()) {
             intent.setAction(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS);
-            intent.setData(Uri.parse("package:" + packageName));
+            intent.setData(Uri.parse("package:" + getPackageName()));
         }
         this.startActivity(intent);
+    }
+
+    private boolean isBatteryOptimisationDisable() {
+        PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
+        if (pm.isIgnoringBatteryOptimizations(getPackageName())) {
+            return true;
+        } else {
+            return false;
+        }
     }
 }

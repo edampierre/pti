@@ -5,7 +5,6 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
-import android.util.Log;
 
 public class ImmobilityDetector implements SensorEventListener {
 
@@ -56,12 +55,8 @@ public class ImmobilityDetector implements SensorEventListener {
             mAccel = mAccel * 0.9f + delta;
             // Make this higher or lower according to how much
             // motion you want to detect
-            String MYAPP = "DETECTION_IMMOBILITY";
             if (mAccel > 1) {
-                Log.d(MYAPP, "Movement Detected");
                 beepHelper.beep(100);
-            } else {
-                Log.d(MYAPP, "Immobility Detected");
             }
         }
     }
