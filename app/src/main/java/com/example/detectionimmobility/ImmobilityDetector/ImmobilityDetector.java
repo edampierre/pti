@@ -1,4 +1,4 @@
-package com.example.detectionimmobility;
+package com.example.detectionimmobility.ImmobilityDetector;
 
 import android.content.Context;
 import android.hardware.Sensor;
@@ -14,17 +14,16 @@ public class ImmobilityDetector implements SensorEventListener {
     private float mAccelCurrent;
     private float mAccelLast;
 
-    private BeepHelper beepHelper;
-
     private final Context context;
+
+    private ImmobilityDetectedCallback immobilityDetectedCallback = null;
+    private MotionDetectedCallback motionDetectedCallback = null;
 
     public ImmobilityDetector(Context context) {
         this.context = context;
     }
 
     public void startListening() {
-
-        beepHelper = new BeepHelper();
 
         sensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
         Sensor accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
@@ -56,13 +55,22 @@ public class ImmobilityDetector implements SensorEventListener {
             // Make this higher or lower according to how much
             // motion you want to detect
             if (mAccel > 1) {
-                beepHelper.beep(100);
+                if(this.motionDetectedCallback != null) {
+                    this.motionDetectedCallback.onMotionDetected();
+                }
             }
         }
     }
 
     @Override
     public void onAccuracyChanged(Sensor sensor, int i) {
+    }
 
+    public void registerImmobilityCallback(ImmobilityDetectedCallback immobilityDetectorCallback) {
+        this.immobilityDetectedCallback = immobilityDetectorCallback;
+    }
+
+    public void registerMotionCallback(MotionDetectedCallback motionDetectedCallback) {
+        this.motionDetectedCallback = motionDetectedCallback;
     }
 }

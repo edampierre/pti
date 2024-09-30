@@ -10,9 +10,13 @@ import android.os.Build;
 import android.os.IBinder;
 import android.util.Log;
 
-public class ImmobilityDetectionService extends Service {
+import com.example.detectionimmobility.ImmobilityDetector.ImmobilityDetector;
+import com.example.detectionimmobility.ImmobilityDetector.MotionDetectedCallback;
+
+public class ImmobilityDetectionService extends Service implements MotionDetectedCallback {
 
     private ImmobilityDetector immobilityDetector;
+    private BeepHelper beepHelper;
     private final String SERVICE_NAME = "PTI_SERVICE";
     public ImmobilityDetectionService() {
 
@@ -20,7 +24,9 @@ public class ImmobilityDetectionService extends Service {
 
     @Override
     public void onCreate() {
-        immobilityDetector = new ImmobilityDetector(this.getApplicationContext());
+        this.immobilityDetector = new ImmobilityDetector(this.getApplicationContext());
+        this.immobilityDetector.registerMotionCallback(this);
+        this.beepHelper = new BeepHelper();
 
         super.onCreate();
 
@@ -89,9 +95,10 @@ public class ImmobilityDetectionService extends Service {
                     .setContentIntent(pendingIntent)
                     .build();
         }
+    }
 
-
-
-
+    @Override
+    public void onMotionDetected() {
+        this.beepHelper.beep(100);
     }
 }
