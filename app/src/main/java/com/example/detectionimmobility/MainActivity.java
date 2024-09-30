@@ -1,37 +1,21 @@
 package com.example.detectionimmobility;
 
-import static java.security.AccessController.getContext;
-
 import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.hardware.Sensor;
-import android.hardware.SensorEvent;
-import android.hardware.SensorEventListener;
-import android.hardware.SensorManager;
-import android.media.AudioManager;
-import android.media.ToneGenerator;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-
-import com.google.android.material.snackbar.Snackbar;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.PowerManager;
 import android.provider.Settings;
 import android.util.Log;
-import android.view.View;
 
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-import androidx.core.view.WindowCompat;
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
-import androidx.navigation.ui.AppBarConfiguration;
-import androidx.navigation.ui.NavigationUI;
 
 import com.example.detectionimmobility.databinding.ActivityMainBinding;
 
@@ -40,9 +24,8 @@ import android.view.MenuItem;
 
 public class MainActivity extends AppCompatActivity {
 
-    private final String MYAPP = "DETECTION_IMMOBILITY";
+    private final String MYAPP = "PTI";
 
-    private ActivityMainBinding binding;
     PowerManager.WakeLock wakeLock;
 
     Intent serviceIntent;
@@ -51,7 +34,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        binding = ActivityMainBinding.inflate(getLayoutInflater());
+        com.example.detectionimmobility.databinding.ActivityMainBinding binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
         setSupportActionBar(binding.toolbar);
@@ -124,7 +107,7 @@ public class MainActivity extends AppCompatActivity {
         PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
         wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,
                 "DetectionImmobility::MyWakelockTag");
-        wakeLock.acquire();
+        wakeLock.acquire(10*60*1000L /*10 minutes*/);
     }
 
     private void handleBattery() {

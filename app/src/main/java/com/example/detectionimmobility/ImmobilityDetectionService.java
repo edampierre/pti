@@ -13,7 +13,7 @@ import android.util.Log;
 public class ImmobilityDetectionService extends Service {
 
     private ImmobilityDetector immobilityDetector;
-    private final String MYAPP = "DETECTION_IMMOBILITY";
+    private final String SERVICE_NAME = "PTI_SERVICE";
     public ImmobilityDetectionService() {
 
     }
@@ -30,7 +30,7 @@ public class ImmobilityDetectionService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        immobilityDetector.initialize();
+        immobilityDetector.startListening();
 
         return START_STICKY;
     }
@@ -43,13 +43,15 @@ public class ImmobilityDetectionService extends Service {
 
     @Override
     public void onDestroy() {
-        immobilityDetector.release();
-        Log.d(MYAPP, "Service Detroyed !");
+        super.onDestroy();
+        immobilityDetector.stopListening();
+
+        Log.d(SERVICE_NAME, "Service Detroyed !");
     }
 
     private Notification createNotification() {
         final String CHANNELID = "Immobility Detection Channel ID";
-        NotificationChannel channel = null;
+        NotificationChannel channel;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             channel = new NotificationChannel(
                     CHANNELID,
@@ -70,12 +72,26 @@ public class ImmobilityDetectionService extends Service {
             builder = new Notification.Builder(this);
         }
 
-        return builder
-                .setContentText("")
-                .setContentTitle("Detection Immobilité Active !")
-                .setSmallIcon(R.drawable.ic_launcher_background)
-                .setPriority(Notification.PRIORITY_HIGH)
-                .setContentIntent(pendingIntent)
-                .build();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            return builder
+                    .setContentText("")
+                    .setContentTitle("Detection Immobilité Active !")
+                    .setSmallIcon(R.drawable.ic_launcher_background)
+                    .setPriority(Notification.PRIORITY_HIGH)
+                    .setContentIntent(pendingIntent)
+                    .setForegroundServiceBehavior(Notification.FOREGROUND_SERVICE_IMMEDIATE)
+                    .build();
+        } else {
+            return builder
+                    .setContentText("")
+                    .setContentTitle("Detection Immobilité Active !")
+                    .setSmallIcon(R.drawable.ic_launcher_background)
+                    .setContentIntent(pendingIntent)
+                    .build();
+        }
+
+
+
+
     }
 }
