@@ -20,6 +20,13 @@
             android:enabled="true"
             android:exported="true"></service>
 
+        <receiver
+            android:name=".RestartBroadcastReceiver"
+            android:enabled="true"
+            android:exported="true"
+            android:label="RestartServiceWhenStopped">
+        </receiver>
+
         <activity
             android:name=".MainActivity"
             android:exported="true"

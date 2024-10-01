@@ -25,7 +25,7 @@ public class ImmobilityDetectionService extends Service implements MotionDetecte
     @Override
     public void onCreate() {
         this.immobilityDetector = new ImmobilityDetector(this.getApplicationContext());
-        this.immobilityDetector.registerMotionCallback(this);
+
         this.beepHelper = new BeepHelper();
 
         super.onCreate();
@@ -36,7 +36,9 @@ public class ImmobilityDetectionService extends Service implements MotionDetecte
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        immobilityDetector.startListening();
+
+        this.immobilityDetector.registerMotionCallback(this);
+        this.immobilityDetector.startListening();
 
         return START_STICKY;
     }
@@ -50,6 +52,10 @@ public class ImmobilityDetectionService extends Service implements MotionDetecte
     @Override
     public void onDestroy() {
         super.onDestroy();
+
+        /*Intent broadcastIntent = new Intent(this, RestartBroadcastReceiver.class);
+        sendBroadcast(broadcastIntent);*/
+
         immobilityDetector.stopListening();
 
         Log.d(SERVICE_NAME, "Service Detroyed !");
