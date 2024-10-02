@@ -24,19 +24,18 @@ public class ImmobilityDetectionService extends Service implements MotionDetecte
 
     @Override
     public void onCreate() {
-        this.immobilityDetector = new ImmobilityDetector(this.getApplicationContext());
-
-        this.beepHelper = new BeepHelper();
-
         super.onCreate();
-
-        Notification notification = this.createNotification();
-        startForeground(1001, notification);
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
 
+        Notification notification = this.createNotification();
+        startForeground(1001, notification);
+
+        this.beepHelper = new BeepHelper();
+
+        this.immobilityDetector = new ImmobilityDetector(this.getApplicationContext());
         this.immobilityDetector.registerMotionCallback(this);
         this.immobilityDetector.startListening();
 
