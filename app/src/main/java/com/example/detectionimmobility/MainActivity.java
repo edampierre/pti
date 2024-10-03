@@ -126,7 +126,7 @@ public class MainActivity extends AppCompatActivity {
         PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
         wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,
                 "DetectionImmobility::MyWakelockTag");
-        wakeLock.acquire(10*60*1000L /*10 minutes*/);
+        wakeLock.acquire();
     }
 
     private void handleBattery() {

@@ -24,18 +24,18 @@ public class ImmobilityDetectionService extends Service implements MotionDetecte
 
     @Override
     public void onCreate() {
+        this.immobilityDetector = new ImmobilityDetector(this.getApplicationContext());
+        this.beepHelper = new BeepHelper();
+
         super.onCreate();
+
+        Notification notification = this.createNotification();
+        startForeground(1001, notification);
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
 
-        Notification notification = this.createNotification();
-        startForeground(1001, notification);
-
-        this.beepHelper = new BeepHelper();
-
-        this.immobilityDetector = new ImmobilityDetector(this.getApplicationContext());
         this.immobilityDetector.registerMotionCallback(this);
         this.immobilityDetector.startListening();
 
@@ -50,8 +50,6 @@ public class ImmobilityDetectionService extends Service implements MotionDetecte
 
     @Override
     public void onDestroy() {
-        super.onDestroy();
-
         /*Intent broadcastIntent = new Intent(this, RestartBroadcastReceiver.class);
         sendBroadcast(broadcastIntent);*/
 
@@ -90,7 +88,6 @@ public class ImmobilityDetectionService extends Service implements MotionDetecte
                     .setSmallIcon(R.drawable.ic_launcher_background)
                     .setPriority(Notification.PRIORITY_HIGH)
                     .setContentIntent(pendingIntent)
-                    .setForegroundServiceBehavior(Notification.FOREGROUND_SERVICE_IMMEDIATE)
                     .build();
         } else {
             return builder
