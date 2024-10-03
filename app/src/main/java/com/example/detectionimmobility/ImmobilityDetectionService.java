@@ -18,16 +18,17 @@ public class ImmobilityDetectionService extends Service implements MotionDetecte
     private ImmobilityDetector immobilityDetector;
     private BeepHelper beepHelper;
     private final String SERVICE_NAME = "PTI_SERVICE";
+
     public ImmobilityDetectionService() {
 
     }
 
     @Override
     public void onCreate() {
+        super.onCreate();
+
         this.immobilityDetector = new ImmobilityDetector(this.getApplicationContext());
         this.beepHelper = new BeepHelper();
-
-        super.onCreate();
 
         Notification notification = this.createNotification();
         startForeground(1001, notification);
@@ -35,6 +36,7 @@ public class ImmobilityDetectionService extends Service implements MotionDetecte
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        super.onStartCommand(intent, flags, startId);
 
         this.immobilityDetector.registerMotionCallback(this);
         this.immobilityDetector.startListening();
@@ -50,12 +52,9 @@ public class ImmobilityDetectionService extends Service implements MotionDetecte
 
     @Override
     public void onDestroy() {
-        /*Intent broadcastIntent = new Intent(this, RestartBroadcastReceiver.class);
-        sendBroadcast(broadcastIntent);*/
-
         immobilityDetector.stopListening();
 
-        Log.d(SERVICE_NAME, "Service Detroyed !");
+        super.onDestroy();
     }
 
     private Notification createNotification() {
