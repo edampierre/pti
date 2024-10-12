@@ -21,6 +21,7 @@ import com.example.detectionimmobility.databinding.ActivityMainBinding;
 
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Button;
 import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity {
@@ -30,6 +31,7 @@ public class MainActivity extends AppCompatActivity {
     PowerManager.WakeLock wakeLock;
 
     Intent serviceIntent;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,12 +48,21 @@ public class MainActivity extends AppCompatActivity {
         //handleBattery();
         handleWakeLock();
 
-        if(!foregroundServiceRunning()) {
-            serviceIntent = new Intent(this,  ImmobilityDetectionService.class);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                startForegroundService(serviceIntent);
+        findViewById(R.id.buttonStartStop).setOnClickListener(view -> {
+            if(!foregroundServiceRunning()) {
+                serviceIntent = new Intent(this,  ImmobilityDetectionService.class);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    startForegroundService(serviceIntent);
+                }
+                ((Button)view.findViewById(R.id.buttonStartStop)).setText("Stop Detection");
+            } else {
+                stopService(serviceIntent);
+                ((Button)view.findViewById(R.id.buttonStartStop)).setText("Start Detection");
+
             }
-        }
+        });
+
+
     }
 
     protected void displayAndroidVersion() {

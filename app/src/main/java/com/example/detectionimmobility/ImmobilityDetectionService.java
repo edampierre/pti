@@ -8,7 +8,8 @@ import android.app.Service;
 import android.content.Intent;
 import android.os.Build;
 import android.os.IBinder;
-import android.util.Log;
+
+import androidx.core.app.NotificationCompat;
 
 import com.example.detectionimmobility.ImmobilityDetector.ImmobilityDetector;
 import com.example.detectionimmobility.ImmobilityDetector.MotionDetectedCallback;
@@ -69,15 +70,17 @@ public class ImmobilityDetectionService extends Service implements MotionDetecte
             getSystemService(NotificationManager.class).createNotificationChannel(channel);
         }
 
-        Intent notificationIntent = new Intent(this, MainActivity.class);
-        PendingIntent pendingIntent =  PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_IMMUTABLE);
+        Intent notificationIntent = new Intent(getApplicationContext(), MainActivity.class);
+        PendingIntent pendingIntent =  PendingIntent.getActivity(getApplicationContext(), 0, notificationIntent, PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
 
+        Intent broadcastIntent = new Intent(getApplicationContext(), NotificationBroadcastReceiver.class);
+        PendingIntent pendingBroadcastIntent = PendingIntent.getBroadcast(this, 0, broadcastIntent, PendingIntent.FLAG_IMMUTABLE);
 
-        Notification.Builder builder;
+        NotificationCompat.Builder builder;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-             builder = new Notification.Builder(this, CHANNELID);
+             builder = new NotificationCompat.Builder(this, CHANNELID);
         } else {
-            builder = new Notification.Builder(this);
+            builder = new NotificationCompat.Builder(this);
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
@@ -87,6 +90,7 @@ public class ImmobilityDetectionService extends Service implements MotionDetecte
                     .setSmallIcon(R.drawable.ic_launcher_background)
                     .setPriority(Notification.PRIORITY_HIGH)
                     .setContentIntent(pendingIntent)
+                    .addAction(0, "I'm alive", pendingBroadcastIntent)
                     .build();
         } else {
             return builder
@@ -94,6 +98,7 @@ public class ImmobilityDetectionService extends Service implements MotionDetecte
                     .setContentTitle("Detection Immobilité Active !")
                     .setSmallIcon(R.drawable.ic_launcher_background)
                     .setContentIntent(pendingIntent)
+                    .addAction(0, "I'm alive", pendingBroadcastIntent)
                     .build();
         }
     }
